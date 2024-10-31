@@ -1,36 +1,38 @@
-ocument.getElementById('teamForm').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Evita o envio padrão do formulário
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('teamForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Impede o envio padrão do formulário
 
-    // Captura os valores dos campos
-    const name1 = document.getElementById('name1').value.trim();
-    const name2 = document.getElementById('name2').value.trim();
-    const name3 = document.getElementById('name3').value.trim();
-    const story = document.getElementById('story').value.trim();
+        const name1 = document.getElementById('name1').value;
+        const name2 = document.getElementById('name2').value;
+        const name3 = document.getElementById('name3').value;
+        const name4 = document.getElementById('name4').value; // Corrigido para usar o ID correto
+        const story = document.getElementById('story').value;
 
-    // Monta o JSON para a requisição
-    const data = {
-        names: [name1, name2, name3],
-        message: story
-    };
+        const data = {
+            names: [name1, name2, name3, name4],
+            message: story
+        };
 
-    try {
-        // Envia a requisição POST
-        const response = await fetch('https://fsdt-contact.onrender.com/contact', {
+        fetch('https://fsdt-contact.onrender.com/contact', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao enviar os dados');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Enviado com sucesso!');
+            // Limpa os campos do formulário
+            document.getElementById('teamForm').reset();
+        })
+        .catch((error) => {
+            alert('Ocorreu um erro: ' + error.message);
         });
-
-        // Verifica o status da resposta
-        if (response.ok) {
-            alert('Formulário enviado com sucesso!');
-            document.getElementById('teamForm').reset(); // Limpa os campos do formulário
-        } else {
-            alert('Ocorreu um erro ao enviar o formulário. Tente novamente.');
-        }
-    } catch (error) {
-        alert('Erro de conexão. Por favor, tente novamente mais tarde.');
-    }
+    });
 });
